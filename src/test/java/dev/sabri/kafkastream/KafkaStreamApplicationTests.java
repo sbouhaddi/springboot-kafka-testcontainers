@@ -55,9 +55,9 @@ class KafkaStreamApplicationTests extends AbstractIntegrationTest {
         AdminClient client = AdminClient.create(admin.getConfigurationProperties());
         client.createTopics(Collections.singletonList(topic));
 
-
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, env.getProperty("spring.kafka.properties.bootstrap.servers"));
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                env.getProperty("spring.kafka.properties.bootstrap.servers"));
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "myGroup");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -65,9 +65,9 @@ class KafkaStreamApplicationTests extends AbstractIntegrationTest {
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, ErrorHandlingDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
-        KafkaConsumer<String, String> consumer = new KafkaConsumer(props);
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
         consumer.subscribe(Collections.singletonList(topicName));
-
+        
 
         Collection<TopicListing> topicList = client.listTopics().listings().get();
         assertEquals(1, topicList.size());
@@ -89,6 +89,8 @@ class KafkaStreamApplicationTests extends AbstractIntegrationTest {
             Assertions.assertThat(records.count()).isPositive();
             return true;
         });
+
+        consumer.close();
 
     }
 
